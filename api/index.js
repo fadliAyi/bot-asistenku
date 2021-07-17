@@ -8,7 +8,11 @@ app.get('test-server', (req, res) => {
 });
 
 app.post('webhook', (req,res) => {
-    bot.command('hello', ctx => {
+    bot.hears('hello', ctx => {
         ctx.reply('hello from webhook');
     });
 })
+
+bot.launch();
+
+module.exports = app;
