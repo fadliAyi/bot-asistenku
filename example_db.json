@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "id": "426236283:426236283",
+      "data": {
+        "counter": 4,
+        "startWrite": false,
+        "notes": [
+          {
+            "date": "2021-07-19T09:10:03.522Z",
+            "text": "Sayur 2000"
+          },
+          {
+            "date": "2021-07-19T09:24:13.772Z",
+            "text": "ikan 50000"
+          },
+          {
+            "date": "2021-07-20T16:42:55.424Z",
+            "textMessage": "ikang goreng 15000",
+            "item": "ikang goreng",
+            "price": "15000"
+          },
+          {
+            "date": "2021-07-20T16:43:35.215Z",
+            "textMessage": "sayur 2 ikat 4000",
+            "item": "sayur 2 ikat",
+            "price": "4000"
+          }
+        ]
+      }
+    }
+  ]
+}
