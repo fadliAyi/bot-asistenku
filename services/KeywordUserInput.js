@@ -13,7 +13,7 @@ class KeywordUserInput {
 
     searchPrice() {
         let {text} = this.context.message;
-        let priceRegex = /\d+(\d)/g;
+        let priceRegex = /\d+(.\d{1,})/g;
         let result = priceRegex.exec(text);  
         return result;
     }
