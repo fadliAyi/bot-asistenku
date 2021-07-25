@@ -1,19 +1,53 @@
 const {Telegraf, Markup, session} = require('telegraf');
 const LocalSession = require('telegraf-session-local');
 const KeywordUserInput = require('./services/KeywordUserInput');
+const NotesFilter = require('./services/NotesFilter');
 const bot = new Telegraf('1796040437:AAEDgh10xOSvXGL-ibmt9pTJBwmSjafzh4k');
 
 const markupHome = Markup
-        .keyboard(['/catat'])
+        .keyboard(['/catat', '/lihat'])
         .oneTime()
         .resize()
 
-bot.use(Telegraf.log());
+const markupFilter = Markup
+        .keyboard(['/bulan_ini', '/bulan_lalu'])
+        .oneTime()
+        .resize()
+
+// bot.use(Telegraf.log());
 bot.use((new LocalSession({ database: 'example_db.json' })).middleware())
 
 bot.command('catat', ctx => {
     ctx.session.startWrite = true;
     ctx.replyWithMarkdown(`Apa yang akan di catat hari ini? Contoh: \`Sayur 2000\``);
+});
+bot.command('lihat', ctx => {
+    ctx.replyWithMarkdown(`Daftar yang mana? `, markupFilter);
+});
+bot.command('bulan_ini', ctx => {
+    let now = new Date();
+    let listItem = `<b>List Catatan Bulan ${now.getMonth() + 1} </b> \n \n`;
+    let totalPrice = 0; 
+    let notes = ctx.session.notes;
+    let notesFilterService = new NotesFilter(notes);
+
+    notesFilterService.filterByDay().map(itemByDay => {
+        listItem += `<u> ${itemByDay.date} </u> \n`;
+
+        itemByDay.data.forEach(note => {
+            listItem += ` -${note.textMessage} \n`;
+            totalPrice += Number(note.price);
+        });
+
+        listItem += `\n`;
+
+        return itemByDay;
+    });
+
+    listItem += `\n <b> TOTAL: ${totalPrice} </b>`;
+    // ctx.replyWithMarkdown(`${listItem}`, markupHome);
+    ctx.replyWithHTML(`${listItem}`, markupHome);
+
 });
 bot.on('text', (ctx, next) => {
     if(ctx.session.startWrite){
