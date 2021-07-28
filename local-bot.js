@@ -5,7 +5,7 @@ const NotesFilter = require('./services/NotesFilter');
 const bot = new Telegraf('1796040437:AAEDgh10xOSvXGL-ibmt9pTJBwmSjafzh4k');
 
 const markupHome = Markup
-        .keyboard(['/catat', '/lihat'])
+        .keyboard(['/catat', '/lihat', '/anggaran'])
         .oneTime()
         .resize()
 
@@ -24,12 +24,18 @@ bot.command('catat', ctx => {
 bot.command('lihat', ctx => {
     ctx.replyWithMarkdown(`Daftar yang mana? `, markupFilter);
 });
+bot.command('anggaran', ctx => {
+    ctx.session.budget = ctx.session.budget || 0;
+    ctx.session.writeBudget = true;
+    ctx.replyWithMarkdown(`Anggaran dibulan ini: ${ctx.session.budget} \n Masukkan nilai baru untuk mengupdate anggaran.`);
+});
 bot.command('bulan_ini', ctx => {
     let now = new Date();
     let listItem = `<b>List Catatan Bulan ${now.getMonth() + 1} </b> \n \n`;
     let totalPrice = 0; 
     let notes = ctx.session.notes;
     let notesFilterService = new NotesFilter(notes);
+    let budget = ctx.session.budget;
 
     notesFilterService.filterByDay().map(itemByDay => {
         listItem += `<u> ${itemByDay.date} </u> \n`;
@@ -45,10 +51,14 @@ bot.command('bulan_ini', ctx => {
     });
 
     listItem += `\n <b> TOTAL: ${totalPrice} </b>`;
+    if(budget){
+        listItem += `\n <b> SISA ANGGARAN: ${budget - totalPrice} </b>`;
+    }
     // ctx.replyWithMarkdown(`${listItem}`, markupHome);
     ctx.replyWithHTML(`${listItem}`, markupHome);
 
 });
+
 bot.on('text', (ctx, next) => {
     if(ctx.session.startWrite){
         ctx.session.notes = ctx.session.notes || [];
@@ -63,6 +73,18 @@ bot.on('text', (ctx, next) => {
             price: keywordUserService.price
         });
         ctx.replyWithMarkdown(`Dicatat!. \`${ctx.message.text}\``);
+        return next();
+    }
+
+    if(ctx.session.writeBudget){
+        if(isNaN(ctx.message.text)) {
+            ctx.reply('Input tidak sesuai.', markupHome);
+            return next();
+        }
+
+        ctx.session.budget = ctx.message.text;
+        ctx.reply(`Dicatat!. Anggaran anda sekarang: ${ctx.session.budget}`);
+        ctx.session.writeBudget = false;
         return next();
     }
 
