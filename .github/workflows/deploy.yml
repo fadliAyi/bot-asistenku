@@ -19,7 +19,7 @@ jobs:
         KEY: ${{ secrets.SSHKEY }}
       with:
         source: "."
-        target: "/home/devbkpsdmd/bot-asistenku"
+        target: "/home/devbkpsdmd"
 
     - name: Executing remote command
       uses: appleboy/ssh-action@master
