@@ -72,7 +72,7 @@ bot.on('text', (ctx, next) => {
             item: keywordUserService.item,
             price: keywordUserService.price
         });
-        ctx.replyWithMarkdown(`Dicatat!. \`${ctx.message.text}\``);
+        ctx.replyWithMarkdown(`Dicatat!. \`${ctx.message.text}\``, markupHome);
         return next();
     }
 
