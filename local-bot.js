@@ -2,6 +2,7 @@ const {Telegraf, Markup, session} = require('telegraf');
 const LocalSession = require('telegraf-session-local');
 const KeywordUserInput = require('./services/KeywordUserInput');
 const NotesFilter = require('./services/NotesFilter');
+const Formating = require('./helpers/formating');
 const bot = new Telegraf('1796040437:AAEDgh10xOSvXGL-ibmt9pTJBwmSjafzh4k');
 
 const markupHome = Markup
@@ -39,33 +40,26 @@ bot.command('bulan_ini', ctx => {
 
     notesFilterService.filterByDay().map(itemByDay => {
         listItem += `<u> ${itemByDay.date} </u> \n`;
-
         itemByDay.data.forEach(note => {
             listItem += ` -${note.textMessage} \n`;
             totalPrice += Number(note.price);
         });
-
         listItem += `\n`;
-
         return itemByDay;
     });
 
-    listItem += `\n <b> TOTAL: ${totalPrice} </b>`;
+    listItem += `\n <b> TOTAL: ${Formating.currencyFormat(totalPrice, 'Rp. ')} </b>`;
     if(budget){
         listItem += `\n <b> SISA ANGGARAN: ${budget - totalPrice} </b>`;
     }
-    // ctx.replyWithMarkdown(`${listItem}`, markupHome);
     ctx.replyWithHTML(`${listItem}`, markupHome);
-
 });
 
 bot.on('text', (ctx, next) => {
     if(ctx.session.startWrite){
         ctx.session.notes = ctx.session.notes || [];
         ctx.session.startWrite = false;
-
         let keywordUserService = new KeywordUserInput(ctx);
-
         ctx.session.notes.push({
             date: new Date(), 
             textMessage: ctx.message.text, 
@@ -81,7 +75,6 @@ bot.on('text', (ctx, next) => {
             ctx.reply('Input tidak sesuai.', markupHome);
             return next();
         }
-
         ctx.session.budget = ctx.message.text;
         ctx.reply(`Dicatat!. Anggaran anda sekarang: ${ctx.session.budget}`);
         ctx.session.writeBudget = false;
