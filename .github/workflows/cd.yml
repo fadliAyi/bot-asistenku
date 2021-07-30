@@ -18,7 +18,7 @@ jobs:
           HOST: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
-          KEY: ${{ secrets.SSHKEY }}
+          password: ${{ secrets.PSWD }}
           script: |
             cd /home/devbkpsdmd/bot-asistenku/
             git pull origin master
