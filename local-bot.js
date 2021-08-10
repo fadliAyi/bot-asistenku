@@ -37,20 +37,24 @@ bot.command('bulan_ini', ctx => {
     let notes = ctx.session.notes;
     let notesFilterService = new NotesFilter(notes);
     let budget = ctx.session.budget;
+    let totalInDay = 0;
 
     notesFilterService.filterByDay().map(itemByDay => {
         listItem += `<u> ${itemByDay.date} </u> \n`;
         itemByDay.data.forEach(note => {
             listItem += ` -${note.textMessage} \n`;
             totalPrice += Number(note.price);
+            totalInDay += Number(note.price);
         });
+        listItem += `TOTAL: ${Formating.currencyFormat(totalInDay, 'Rp. ')}`;
         listItem += `\n`;
+        totalInDay = 0;
         return itemByDay;
     });
 
     listItem += `\n <b> TOTAL: ${Formating.currencyFormat(totalPrice, 'Rp. ')} </b>`;
     if(budget){
-        listItem += `\n <b> SISA ANGGARAN: ${budget - totalPrice} </b>`;
+        listItem += `\n <b> SISA ANGGARAN: ${Formating.currencyFormat(budget - totalPrice, 'Rp. ')} </b>`;
     }
     ctx.replyWithHTML(`${listItem}`, markupHome);
 });
